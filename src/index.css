@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: black;
+  color: #eee;
+  font-family: "Chakra Petch", sans-serif;
+}
+
+::-webkit-scrollbar {
+  display: block;
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #444;
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 1px;
+}

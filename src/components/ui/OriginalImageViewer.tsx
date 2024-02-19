@@ -16,14 +16,14 @@ const OriginalImageViewer = ({ statusData, isLoading, isWaitingForQue }: Props) 
         <p className="mb-2 text-[18px]">Bg removed image</p>
       </div>
       <div className="w-full grid grid-cols-2">
-        {statusData && statusData.original_image && !isLoading && (
+        {statusData && statusData.originalImage && !isLoading && (
           <div className="border border-white/20 overflow-hidden rounded-l-xl">
-            <img src={statusData.original_image} className="w-full" />
+            <img src={statusData.originalImage} className="w-full" />
           </div>
         )}
-        {statusData && statusData.remove_bg_image && !isLoading && (
+        {statusData && statusData.removeBgImage && !isLoading && (
           <div className="border border-white/20 overflow-hidden rounded-r-xl">
-            <img src={statusData.remove_bg_image} className="w-full" />
+            <img src={statusData.removeBgImage} className="w-full" />
           </div>
         )}
         {(isLoading || isWaitingForQue) && (

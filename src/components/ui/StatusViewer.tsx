@@ -13,17 +13,17 @@ const StatusViewer = ({ statusData }: Props) => {
         <span
           className={cls(
             "font-semibold",
-            statusData?.progress_ratio && statusData?.progress_ratio > 0 ? "text-blue-300" : "text-gray-500"
+            statusData?.progressRatio && statusData?.progressRatio > 0 ? "text-blue-300" : "text-gray-500"
           )}
         >
-          {statusData?.progress_ratio ?? 0}%
+          {statusData?.progressRatio ?? 0}%
         </span>
       </p>
-      {statusData?.waiting_count && (
+      {statusData?.waitingCount && (
         <p>
           <span className="text-[18px]">Queue</span> :{" "}
-          {statusData.waiting_count > 0 && (
-            <span className="text-red-400 font-semibold">{statusData?.waiting_count}</span>
+          {statusData.waitingCount > 0 && (
+            <span className="text-red-400 font-semibold">{statusData?.waitingCount}</span>
           )}
         </p>
       )}

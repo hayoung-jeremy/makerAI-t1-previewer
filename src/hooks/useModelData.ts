@@ -6,23 +6,25 @@ const previewUrl = `${apiUrl}/preview/`;
 const statusUrl = `${apiUrl}/status/`;
 const resultUrl = `${apiUrl}/result/`;
 
+const INTERVAL_TIME = 3000;
+
 export interface ModelData {
-  base_url: string;
+  baseUrl: string;
   result: number;
   resultFiles: string[];
   uploadId: string;
 }
 
 export interface PreviewData {
-  base_url: string;
+  baseUrl: string;
   images: string[];
 }
 
 export interface StatusData {
-  progress_ratio: number;
-  waiting_count: number;
-  original_image: string | null;
-  remove_bg_image: string | null;
+  progressRatio: number;
+  waitingCount: number;
+  originalImage: string | null;
+  removeBgImage: string | null;
 }
 
 const useModelData = () => {
@@ -118,7 +120,7 @@ const useModelData = () => {
 
   // get status
   useEffect(() => {
-    const interval = setInterval(getStatus, 1000);
+    const interval = setInterval(getStatus, INTERVAL_TIME);
     return () => clearInterval(interval);
   }, [getStatus]);
 
@@ -126,14 +128,14 @@ const useModelData = () => {
   useEffect(() => {
     if (!uploadId || isWaitingForQue || isLoading || isCompleted) return;
 
-    const interval = setInterval(getPreview, 1000);
+    const interval = setInterval(getPreview, INTERVAL_TIME);
     return () => clearInterval(interval);
   }, [uploadId, isCompleted, isWaitingForQue, isLoading, getPreview]);
 
   useEffect(() => {
     if (!modelData) return;
     const modifiedModelFile = modelData.resultFiles.find((file: string) => file === "model-modified-texture.glb");
-    setTextureModifiedModelURL(`${modelData.base_url}/${modifiedModelFile}`);
+    setTextureModifiedModelURL(`${modelData.baseUrl}/${modifiedModelFile}`);
   }, [modelData]);
 
   return {

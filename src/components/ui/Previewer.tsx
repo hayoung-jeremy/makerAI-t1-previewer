@@ -25,18 +25,13 @@ const Previewer = ({ isCompleted, isWaitingForQue, isLoading, previewData }: Pro
             if (image.endsWith(".mp4") && isCompleted) {
               return (
                 <video key={index} autoPlay muted loop style={{ maxWidth: "100%" }}>
-                  <source src={previewData.base_url + image} type="video/mp4" />
+                  <source src={previewData.baseUrl + image} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               );
             } else if (image.endsWith(".png") && !isCompleted) {
               return (
-                <img
-                  key={index}
-                  src={previewData.base_url + image}
-                  alt="미리보기 이미지"
-                  style={{ maxWidth: "100%" }}
-                />
+                <img key={index} src={previewData.baseUrl + image} alt="미리보기 이미지" style={{ maxWidth: "100%" }} />
               );
             }
           })}

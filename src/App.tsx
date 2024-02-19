@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { CameraControls } from "@react-three/drei";
 
@@ -9,7 +9,7 @@ import {
   ToggleToSeeWireframeButton,
   FileDownloader,
 } from "./components/ui";
-import { EnvironmentSettings, Loader, ModelViewer } from "./components/three";
+import { EnvironmentSettings, ModelViewer, ProgressLoader } from "./components/three";
 import useModelData from "./hooks/useModelData";
 import { cls } from "./utils";
 
@@ -51,11 +51,11 @@ function App() {
       <div className="w-[100%]">
         <Canvas camera={{ fov: 60 }} gl={{ antialias: true }} dpr={[1, 2]}>
           {/* <ModelViewer modelUrl={textureModifiedModelURL} /> */}
-          {modelData && isCompleted && textureModifiedModelURL !== "" && textureModifiedModelURL !== undefined ? (
-            <ModelViewer modelUrl={textureModifiedModelURL} />
-          ) : (
-            <Loader isLoading={isLoading} isGenerating={isGenerating} isWaitingForQue={isWaitingForQue} />
-          )}
+          <Suspense fallback={<ProgressLoader />}>
+            {modelData && isCompleted && textureModifiedModelURL !== "" && textureModifiedModelURL !== undefined && (
+              <ModelViewer modelUrl={textureModifiedModelURL} />
+            )}
+          </Suspense>
           <CameraControls
             enabled
             minDistance={2}
@@ -68,6 +68,16 @@ function App() {
           <EnvironmentSettings />
         </Canvas>
       </div>
+
+      {(isLoading || isWaitingForQue) && (
+        <p
+          style={{ textShadow: "0px 0px 8px #ffffff80" }}
+          className="fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] text-[48px] leading-[48px] select-none"
+        >
+          {isLoading && "Loading..."}
+          {isWaitingForQue && "Waiting for previous work"}
+        </p>
+      )}
 
       <aside
         className={cls(

@@ -17,7 +17,7 @@ export interface ModelData {
 
 export interface PreviewData {
   baseUrl: string;
-  images: string[];
+  video: string;
 }
 
 export interface StatusData {

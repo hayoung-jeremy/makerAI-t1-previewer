@@ -21,7 +21,7 @@ export interface PreviewData {
 }
 
 export interface StatusData {
-  progressRatio: number;
+  progressRatio: string;
   waitingCount: number;
   originalImage: string | null;
   removeBgImage: string | null;
@@ -93,8 +93,7 @@ const useModelData = () => {
           setIsWaitingForQue(false);
           setStatusData(data);
           // 100% 인 경우에는 여기서 최종 완료 체크
-          if (data.progressRatio === 100) {
-            // setModelData(null);
+          if (data.progressRatio === "100") {
             getResultfiles();
           }
         }

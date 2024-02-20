@@ -38,14 +38,14 @@ const DistortLoader = ({ statusData }: Props) => {
           <Html transform position={[0, -0.8, 0]} scale={0.5} zIndexRange={[0, 0]}>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
               <p style={{ textShadow: "0px 0px 2px #ffffff80" }} className="text-[12px] text-center mb-1">
-                {Math.floor(statusData?.progressRatio)}%
+                {Math.floor(Number(statusData?.progressRatio))}%
               </p>
               <div className="relative left-1/2 translate-x-[-50%] w-[40px] h-[1px] bg-white/20">
                 <div
                   style={{ width: statusData?.progressRatio + "%" }}
                   className={cls(
                     "absolute h-full bg-white transition-all duration-300",
-                    statusData?.progressRatio > 0 ? "shadow-[0px_0px_3px_1px_#ffffff60]" : ""
+                    Number(statusData?.progressRatio) > 0 ? "shadow-[0px_0px_3px_1px_#ffffff60]" : ""
                   )}
                 ></div>
               </div>

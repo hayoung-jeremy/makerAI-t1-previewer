@@ -13,7 +13,7 @@ const StatusViewer = ({ statusData }: Props) => {
         <span
           className={cls(
             "font-semibold",
-            statusData?.progressRatio && statusData?.progressRatio > 0 ? "text-blue-300" : "text-gray-500"
+            statusData?.progressRatio && Number(statusData?.progressRatio) > 0 ? "text-blue-300" : "text-gray-500"
           )}
         >
           {statusData?.progressRatio ?? 0}%

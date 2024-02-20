@@ -3,14 +3,19 @@ import { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Float, Html, MeshDistortMaterial } from "@react-three/drei";
 import { MathUtils } from "three";
-import { cls } from "../../utils";
-import useModelData from "../../hooks/useModelData";
+import { motion } from "framer-motion";
 
-const DistortLoader = () => {
+import { cls } from "../../utils";
+import { StatusData } from "../../hooks/useModelData";
+
+interface Props {
+  statusData: StatusData | null;
+}
+
+const DistortLoader = ({ statusData }: Props) => {
   const ref = useRef<any>(null);
   const meshRef = useRef<any>(null);
   const [hovered, hover] = useState(false);
-  const { statusData } = useModelData();
 
   useFrame(() => {
     if (!ref.current || !meshRef.current) return;
@@ -31,18 +36,20 @@ const DistortLoader = () => {
       >
         {statusData && (
           <Html transform position={[0, -0.8, 0]} scale={0.5} zIndexRange={[0, 0]}>
-            <p style={{ textShadow: "0px 0px 2px #ffffff80" }} className="text-[14px] text-center mb-1">
-              {Math.floor(statusData?.progressRatio)}%
-            </p>
-            <div className="relative left-1/2 translate-x-[-50%] w-[40px] h-[1px] bg-white/20">
-              <div
-                style={{ width: statusData?.progressRatio + "%" }}
-                className={cls(
-                  "absolute h-full bg-white transition-all duration-300",
-                  statusData?.progressRatio > 0 ? "shadow-[0px_0px_3px_1px_#ffffff60]" : ""
-                )}
-              ></div>
-            </div>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+              <p style={{ textShadow: "0px 0px 2px #ffffff80" }} className="text-[12px] text-center mb-1">
+                {Math.floor(statusData?.progressRatio)}%
+              </p>
+              <div className="relative left-1/2 translate-x-[-50%] w-[40px] h-[1px] bg-white/20">
+                <div
+                  style={{ width: statusData?.progressRatio + "%" }}
+                  className={cls(
+                    "absolute h-full bg-white transition-all duration-300",
+                    statusData?.progressRatio > 0 ? "shadow-[0px_0px_3px_1px_#ffffff60]" : ""
+                  )}
+                ></div>
+              </div>
+            </motion.div>
           </Html>
         )}
       </Float>

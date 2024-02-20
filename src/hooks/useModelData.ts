@@ -6,7 +6,7 @@ const previewUrl = `${apiUrl}/preview/`;
 const statusUrl = `${apiUrl}/status/`;
 const resultUrl = `${apiUrl}/result/`;
 
-const INTERVAL_TIME = 3000;
+const INTERVAL_TIME = 2000;
 
 export interface ModelData {
   baseUrl: string;
@@ -60,7 +60,7 @@ const useModelData = () => {
     fetch(resultUrl + uploadId)
       .then(res => res.json())
       .then((data: ModelData) => {
-        if (data.resultFiles.includes("model-modified-texture.glb")) {
+        if (data.resultFiles.some(file => file.endsWith(".zip"))) {
           setModelData(data);
           getPreview();
           setIsCompleted(true);

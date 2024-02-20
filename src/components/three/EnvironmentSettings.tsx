@@ -1,11 +1,13 @@
 import { CameraControls, Environment } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import useDisplay from "../../hooks/useDisplay";
-import useModelData from "../../hooks/useModelData";
 
-const EnvironmentSettings = () => {
+interface Props {
+  isCompleted: boolean;
+}
+
+const EnvironmentSettings = ({ isCompleted }: Props) => {
   const { isDesktop } = useDisplay();
-  const { isCompleted } = useModelData();
 
   return (
     <>

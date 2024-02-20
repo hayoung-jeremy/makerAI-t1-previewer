@@ -1,6 +1,5 @@
 import { Suspense, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { CameraControls } from "@react-three/drei";
 
 import {
   OriginalImageViewer,
@@ -10,6 +9,7 @@ import {
   FileDownloader,
 } from "./components/ui";
 import { DistortLoader, EnvironmentSettings, ModelViewer, ProgressLoader } from "./components/three";
+
 import { cls } from "./utils";
 import useModelData from "./hooks/useModelData";
 import useDisplay from "./hooks/useDisplay";
@@ -54,13 +54,12 @@ function App() {
         <Canvas camera={{ fov: 60 }} gl={{ antialias: true }} dpr={[1, 2]}>
           {/* <ModelViewer modelUrl={textureModifiedModelURL} /> */}
           <Suspense fallback={<ProgressLoader />}>
-            {modelData && isCompleted && textureModifiedModelURL !== "" && textureModifiedModelURL !== undefined ? (
+            {modelData && isCompleted && textureModifiedModelURL !== "" && textureModifiedModelURL !== undefined && (
               <ModelViewer modelUrl={textureModifiedModelURL} />
-            ) : (
-              <DistortLoader />
             )}
+            {isGenerating && <DistortLoader statusData={statusData} />}
           </Suspense>
-          <EnvironmentSettings />
+          <EnvironmentSettings isCompleted={isCompleted} />
         </Canvas>
       </div>
 

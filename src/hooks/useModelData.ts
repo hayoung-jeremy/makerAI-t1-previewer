@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 const apiUrl = "http://10.190.140.55:8086";
 const previewUrl = `${apiUrl}/preview/`;
 const statusUrl = `${apiUrl}/status/`;
-const resultUrl = `${apiUrl}/result/`;
+const resultUrl = "https://ai-result.altava.com/result/5/";
 
 const INTERVAL_TIME = 2000;
 
@@ -60,6 +60,7 @@ const useModelData = () => {
     fetch(resultUrl + uploadId)
       .then(res => res.json())
       .then((data: ModelData) => {
+        console.log("Result API Call Success", data);
         if (data.resultFiles.some(file => file.endsWith(".zip"))) {
           setModelData(data);
           getPreview();

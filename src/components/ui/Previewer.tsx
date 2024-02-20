@@ -19,9 +19,9 @@ const Previewer = ({ isWaitingForQue, isLoading, previewData }: Props) => {
             <p className="text-gray-500">{isWaitingForQue ? "Waiting..." : "Loading..."}</p>
           </div>
         )}
-        {previewData && !isLoading && (
+        {previewData && (
           <video autoPlay muted loop style={{ maxWidth: "100%" }}>
-            <source src={previewData.baseUrl + previewData.video} type="video/mp4" />
+            <source src={`${previewData.baseUrl}/${previewData.video}`} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         )}

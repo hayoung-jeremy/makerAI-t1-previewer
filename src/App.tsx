@@ -9,7 +9,7 @@ import {
   ToggleToSeeWireframeButton,
   FileDownloader,
 } from "./components/ui";
-import { EnvironmentSettings, ModelViewer, ProgressLoader } from "./components/three";
+import { DistortLoader, EnvironmentSettings, ModelViewer, ProgressLoader } from "./components/three";
 import { cls } from "./utils";
 import useModelData from "./hooks/useModelData";
 import useDisplay from "./hooks/useDisplay";
@@ -54,19 +54,12 @@ function App() {
         <Canvas camera={{ fov: 60 }} gl={{ antialias: true }} dpr={[1, 2]}>
           {/* <ModelViewer modelUrl={textureModifiedModelURL} /> */}
           <Suspense fallback={<ProgressLoader />}>
-            {modelData && isCompleted && textureModifiedModelURL !== "" && textureModifiedModelURL !== undefined && (
+            {modelData && isCompleted && textureModifiedModelURL !== "" && textureModifiedModelURL !== undefined ? (
               <ModelViewer modelUrl={textureModifiedModelURL} />
+            ) : (
+              <DistortLoader />
             )}
           </Suspense>
-          <CameraControls
-            enabled
-            minDistance={2}
-            maxDistance={4}
-            mouseButtons={{ left: 1, middle: 8, right: 0, wheel: 8 }}
-            touches={{ one: 32, two: 256, three: 0 }}
-            smoothTime={0.2}
-            draggingSmoothTime={0.2}
-          />
           <EnvironmentSettings />
         </Canvas>
       </div>

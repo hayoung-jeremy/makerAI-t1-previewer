@@ -19,14 +19,14 @@ const StatusViewer = ({ statusData }: Props) => {
           {statusData?.progressRatio ?? 0}%
         </span>
       </p>
-      {statusData?.waitingCount && (
+      {statusData?.waitingCount && statusData.waitingCount > 0 ? (
         <p>
           <span className="text-[18px]">Queue</span> :{" "}
           {statusData.waitingCount > 0 && (
             <span className="text-red-400 font-semibold">{statusData?.waitingCount}</span>
           )}
         </p>
-      )}
+      ) : null}
     </div>
   );
 };

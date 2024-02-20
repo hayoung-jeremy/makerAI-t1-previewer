@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-const apiUrl = "http://10.190.140.90:8000";
+const apiUrl = "http://10.190.140.55:8086";
 const previewUrl = `${apiUrl}/preview/`;
 const statusUrl = `${apiUrl}/status/`;
 const resultUrl = `${apiUrl}/result/`;
@@ -46,7 +46,7 @@ const useModelData = () => {
     () =>
       fetch(previewUrl + uploadId)
         .then(res => res.json())
-        .then(data => setPreviewData(data))
+        .then((data: PreviewData) => setPreviewData(data))
         .catch(err => {
           setIsLoading(true);
           console.log("Preview API Call Error", err);
@@ -59,7 +59,7 @@ const useModelData = () => {
     // if (statusData === null) {
     fetch(resultUrl + uploadId)
       .then(res => res.json())
-      .then(data => {
+      .then((data: ModelData) => {
         if (data.resultFiles.includes("model-modified-texture.glb")) {
           setModelData(data);
           getPreview();
@@ -77,13 +77,13 @@ const useModelData = () => {
     if (!uploadId || isCompleted) return;
     fetch(statusUrl + uploadId)
       .then(res => res.json())
-      .then(data => {
+      .then((data: StatusData) => {
         // 대기열 상태
-        if (data.waiting_count > 0) {
+        if (data.waitingCount > 0) {
           setIsWaitingForQue(true);
           setIsLoading(false);
           setStatusData(data);
-        } else if (data.waiting_count < 0) {
+        } else if (data.waitingCount < 0) {
           //
         }
 
@@ -94,7 +94,7 @@ const useModelData = () => {
           setIsWaitingForQue(false);
           setStatusData(data);
           // 100% 인 경우에는 여기서 최종 완료 체크
-          if (data.progress_ratio === 100) {
+          if (data.progressRatio === 100) {
             // setModelData(null);
             getResultfiles();
           }

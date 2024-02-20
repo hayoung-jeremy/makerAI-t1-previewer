@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 const apiUrl = "http://10.190.140.55:8086";
@@ -32,6 +32,8 @@ const useModelData = () => {
   const pathname = location.pathname;
   const uploadId = pathname.split("/").pop();
 
+  const intervalId = useRef<number | undefined>(undefined);
+
   const [modelData, setModelData] = useState<ModelData | null>(null);
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const [statusData, setStatusData] = useState<StatusData | null>(null);
@@ -55,8 +57,6 @@ const useModelData = () => {
   );
 
   const getResultfiles = useCallback(() => {
-    // 진행률 정보 없음
-    // if (statusData === null) {
     fetch(resultUrl + uploadId)
       .then(res => res.json())
       .then((data: ModelData) => {
@@ -71,11 +71,9 @@ const useModelData = () => {
         console.log("Result API Call Error", err);
         setIsLoading(true);
       });
-    // }
   }, [getPreview, uploadId]);
 
   const getStatus = useCallback(() => {
-    if (!uploadId || isCompleted) return;
     fetch(statusUrl + uploadId)
       .then(res => res.json())
       .then((data: StatusData) => {
@@ -121,16 +119,34 @@ const useModelData = () => {
 
   // get status
   useEffect(() => {
-    const interval = setInterval(getStatus, INTERVAL_TIME);
-    return () => clearInterval(interval);
-  }, [getStatus]);
+    if (!uploadId || isCompleted) return;
+
+    const fetchStatus = () => {
+      getStatus();
+      intervalId.current = window.setTimeout(fetchStatus, INTERVAL_TIME);
+    };
+
+    fetchStatus();
+
+    return () => {
+      if (intervalId.current) clearTimeout(intervalId.current);
+    };
+  }, [getStatus, uploadId, isCompleted]);
 
   // get preview
   useEffect(() => {
     if (!uploadId || isWaitingForQue || isLoading || isCompleted) return;
 
-    const interval = setInterval(getPreview, INTERVAL_TIME);
-    return () => clearInterval(interval);
+    const fetchPreview = () => {
+      getPreview();
+      intervalId.current = window.setTimeout(fetchPreview, INTERVAL_TIME);
+    };
+
+    fetchPreview();
+
+    return () => {
+      if (intervalId.current) clearTimeout(intervalId.current);
+    };
   }, [uploadId, isCompleted, isWaitingForQue, isLoading, getPreview]);
 
   useEffect(() => {

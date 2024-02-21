@@ -1,27 +1,29 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { SpinningLoader } from ".";
-import { PreviewData } from "../../hooks/useModelData";
+import { GeneratingStatus, PreviewData } from "../../hooks/useModelData";
 
 interface Props {
   previewData: PreviewData | null;
-  isCompleted: boolean;
-  isWaitingForQue: boolean;
-  isLoading: boolean;
+  generatingStatus: GeneratingStatus;
 }
 
-const Previewer = ({ previewData, isWaitingForQue, isLoading }: Props) => {
+const Previewer = ({ previewData, generatingStatus }: Props) => {
   const [isGifLoaded, setIsGifLoaded] = useState(false);
 
   return (
     <div>
       <h2 className="text-[18px] mb-2">Preview</h2>
       <div className="flex flex-col gap-[2px] rounded-xl overflow-hidden">
-        {(isLoading || isWaitingForQue || !isGifLoaded) && (
+        {(generatingStatus === "Loading" || generatingStatus === "Waiting" || !isGifLoaded) && (
           <div className="flex items-center justify-start gap-2">
             <SpinningLoader width={16} height={16} loaderBgColor="text-gray-500" />
             <p className="text-gray-500">
-              {isWaitingForQue ? "Waiting..." : previewData?.gif === "" ? "Creating a preview" : "Loading..."}
+              {generatingStatus === "Waiting"
+                ? "Waiting..."
+                : previewData?.gif === ""
+                ? "Creating a preview"
+                : "Loading..."}
             </p>
           </div>
         )}

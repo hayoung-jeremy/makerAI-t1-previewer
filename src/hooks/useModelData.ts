@@ -6,7 +6,7 @@ const previewUrl = `${apiUrl}/preview/`;
 const statusUrl = `${apiUrl}/status/`;
 const resultUrl = "https://ai-result.altava.com/result/5/";
 
-const INTERVAL_TIME = 1000 * 60 * 5;
+const INTERVAL_TIME = 1000 * 5;
 
 export interface ModelData {
   base_url: string;
@@ -27,6 +27,8 @@ export interface StatusData {
   removeBgImage: string | null;
 }
 
+export type GeneratingStatus = "Loading" | "Waiting" | "Generating" | "Completed";
+
 const useModelData = () => {
   const location = useLocation();
   const pathname = location.pathname;
@@ -37,10 +39,8 @@ const useModelData = () => {
   const [modelData, setModelData] = useState<ModelData | null>(null);
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const [statusData, setStatusData] = useState<StatusData | null>(null);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isWaitingForQue, setIsWaitingForQue] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
+
+  const [generatingStatus, setGeneratingStatus] = useState<GeneratingStatus>("Loading");
 
   const [textureModifiedModelURL, setTextureModifiedModelURL] = useState("");
   const [originalImgURL, setOriginalImgURL] = useState("");
@@ -52,7 +52,7 @@ const useModelData = () => {
         .then(res => res.json())
         .then((data: PreviewData) => setPreviewData(data))
         .catch(err => {
-          setIsLoading(true);
+          setGeneratingStatus("Loading");
           console.log("Preview API Call Error", err);
         }),
     [uploadId]
@@ -89,12 +89,12 @@ const useModelData = () => {
             setRemovedBGImgURL(`${data.base_url}/${removedBGImgFile}`);
           }
 
-          setIsCompleted(true);
+          setGeneratingStatus("Completed");
         }
       })
       .catch(err => {
         console.log("Result API Call Error", err);
-        setIsLoading(true);
+        setGeneratingStatus("Loading");
       });
   }, [getPreview, uploadId]);
 
@@ -106,24 +106,17 @@ const useModelData = () => {
         setStatusData(data);
         // 대기열 상태
         if (data.waitingCount > 0) {
-          setIsWaitingForQue(true);
-          setIsLoading(false);
+          setGeneratingStatus("Waiting");
         }
         // 완료
         else if (data.waitingCount < 0 && data.progressRatio === "100") {
           console.log("완료");
           getResultfiles();
-          setIsLoading(false);
-          setIsWaitingForQue(false);
-          setIsGenerating(false);
-          setIsCompleted(true);
+          setGeneratingStatus("Completed");
         }
         // 생성중
         else {
-          setIsGenerating(true);
-          setIsLoading(false);
-          setIsWaitingForQue(false);
-          setIsCompleted(false);
+          setGeneratingStatus("Generating");
 
           if (data.originalImage && data.removeBgImage) {
             setOriginalImgURL(data.originalImage);
@@ -131,10 +124,7 @@ const useModelData = () => {
           }
           if (data.progressRatio === "100") {
             getResultfiles();
-            setIsGenerating(false);
-            setIsLoading(false);
-            setIsWaitingForQue(false);
-            setIsCompleted(true);
+            setGeneratingStatus("Completed");
           }
         }
       })
@@ -145,54 +135,57 @@ const useModelData = () => {
         // 위 2가지 케이스는 구분할 수 없음
         // 그러므로 하나의 UI 로 퉁쳐야 함
         console.log("진행률 0 or 99.5일 때 : ", err);
-        setIsLoading(true);
-        setIsGenerating(false);
-        setIsWaitingForQue(false);
-        if (!isCompleted) {
-          // "model-modified-texture.glb" 파일이 결과 파일 목록에 있으면 isCompleted 를 true 로 처리함
+        setGeneratingStatus("Loading");
+        if (generatingStatus !== "Completed") {
           getResultfiles();
         }
         console.log("checking temporary status...");
       });
-  }, [isCompleted, uploadId, getResultfiles]);
+  }, [uploadId, getResultfiles, generatingStatus]);
 
   // get status
   useEffect(() => {
-    if (!uploadId || isCompleted) return;
+    if (!uploadId) return;
 
     const fetchStatus = () => {
-      getStatus();
-      if (!isCompleted) {
-        intervalId.current = window.setTimeout(fetchStatus, INTERVAL_TIME);
+      // generatingStatus가 "Completed"일 때는 API 호출 중단
+      if (generatingStatus === "Completed") {
+        return;
       }
+
+      getStatus();
+      // 다음 상태 확인을 위한 타임아웃 설정
+      intervalId.current = window.setTimeout(fetchStatus, INTERVAL_TIME);
     };
 
     fetchStatus(); // 최초 실행
 
     return () => {
+      // cleanup 함수에서 타임아웃 취소
       if (intervalId.current) clearTimeout(intervalId.current);
     };
-  }, [getStatus, uploadId, isCompleted]);
+  }, [getStatus, uploadId, generatingStatus]);
 
   // get preview
   useEffect(() => {
-    if (!uploadId || isWaitingForQue || isLoading || isCompleted) {
+    if (!uploadId || generatingStatus !== "Generating") {
+      // generatingStatus가 "Generating"이 아닌 경우, 호출 중단
       return;
     }
 
     const fetchPreview = () => {
-      getPreview(); // getPreview 호출
-      if (!isCompleted) {
-        intervalId.current = window.setTimeout(fetchPreview, INTERVAL_TIME);
-      }
+      getPreview();
+      // 다음 상태 확인을 위한 타임아웃 설정
+      intervalId.current = window.setTimeout(fetchPreview, INTERVAL_TIME);
     };
 
     fetchPreview(); // 최초 실행
 
     return () => {
+      // cleanup 함수에서 타임아웃 취소
       if (intervalId.current) clearTimeout(intervalId.current);
     };
-  }, [getPreview, uploadId, isWaitingForQue, isLoading, isCompleted]);
+  }, [getPreview, uploadId, generatingStatus]);
 
   useEffect(() => {
     if (!modelData) return;
@@ -201,10 +194,7 @@ const useModelData = () => {
   }, [modelData]);
 
   return {
-    isLoading,
-    isGenerating,
-    isCompleted,
-    isWaitingForQue,
+    generatingStatus,
     modelData,
     previewData,
     statusData,

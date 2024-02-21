@@ -1,27 +1,15 @@
-import { SpinningLoader } from ".";
 import { Download } from "../icons";
 import { ModelData } from "../../hooks/useModelData";
 import { cls } from "../../utils";
 
 interface Props {
   modelData: ModelData | null;
-  isLoading: boolean;
 }
 
-const FileDownloader = ({ modelData, isLoading }: Props) => {
-  if (!isLoading && modelData && modelData.resultFiles.length === 0) {
-    return <div>No files available for download.</div>;
-  }
-
+const FileDownloader = ({ modelData }: Props) => {
   return (
     <div>
       <h2 className="text-[18px] mb-2">FileDownloader</h2>
-      {isLoading && (
-        <div className="flex items-center justify-start gap-2">
-          <SpinningLoader width={16} height={16} loaderBgColor="text-gray-500" />
-          <p className="text-gray-500">Loading...</p>
-        </div>
-      )}
       <ul className="flex flex-col gap-2">
         {modelData &&
           modelData.resultFiles.map((file, index) => (

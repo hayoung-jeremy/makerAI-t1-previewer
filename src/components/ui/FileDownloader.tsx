@@ -7,24 +7,35 @@ interface Props {
 }
 
 const FileDownloader = ({ modelData }: Props) => {
+  const filteredFiles = modelData?.resultFiles.filter(
+    file => file.endsWith("remeshed-texture.glb") || file.endsWith(".zip")
+  );
+
+  const getDisplayName = (filename: string) => {
+    if (filename.endsWith("remeshed-texture.glb")) {
+      return "RESULT 3D MODEL";
+    } else if (filename.endsWith(".zip")) {
+      return "RESULT ZIP FILE";
+    } else {
+      return filename; // 이 경우는 발생하지 않지만, 혹시 모르니 기본 반환값을 유지
+    }
+  };
   return (
     <div>
       <h2 className="text-[18px] mb-2">FileDownloader</h2>
       <ul className="flex flex-col gap-2">
         {modelData &&
-          modelData.resultFiles.map((file, index) => (
+          filteredFiles &&
+          filteredFiles.map((file, index) => (
             <li
-              key={index}
               className={cls(
                 "flex items-center justify-center gap-3 px-4 rounded border transition-all",
-                file.includes("model-modified-texture.glb")
-                  ? "border-blue-300/60 text-blue-300/80 hover:border-blue-300 hover:text-blue-300"
-                  : "border-white/20 hover:border-white text-white/60 hover:text-white"
+                "border-white/20 xl:hover:border-white text-white/60 xl:hover:text-white"
               )}
             >
               <Download />
               <a href={`${modelData.base_url}/${file}`} download={file} className="block py-2 truncate w-full">
-                {file}
+                {getDisplayName(file)}
               </a>
             </li>
           ))}

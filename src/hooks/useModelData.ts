@@ -62,7 +62,7 @@ const useModelData = () => {
     fetch(resultUrl + uploadId)
       .then(res => res.json())
       .then((data: ModelData) => {
-        console.log("ModelData : ", data);
+        // console.log("ModelData : ", data);
         if (data.resultFiles.some(file => file.endsWith(".zip"))) {
           setModelData(data);
           getPreview();
@@ -102,7 +102,7 @@ const useModelData = () => {
     fetch(statusUrl + uploadId)
       .then(res => res.json())
       .then((data: StatusData) => {
-        console.log("Status data : ", data);
+        // console.log("Status data : ", data);
         setStatusData(data);
         // 대기열 상태
         if (data.waitingCount > 0) {
@@ -145,44 +145,32 @@ const useModelData = () => {
 
   // get status
   useEffect(() => {
-    if (!uploadId) return;
+    if (!uploadId || generatingStatus === "Completed") return;
 
     const fetchStatus = () => {
-      // generatingStatus가 "Completed"일 때는 API 호출 중단
-      if (generatingStatus === "Completed") {
-        return;
-      }
-
       getStatus();
-      // 다음 상태 확인을 위한 타임아웃 설정
       intervalId.current = window.setTimeout(fetchStatus, INTERVAL_TIME);
     };
 
-    fetchStatus(); // 최초 실행
+    fetchStatus();
 
     return () => {
-      // cleanup 함수에서 타임아웃 취소
       if (intervalId.current) clearTimeout(intervalId.current);
     };
   }, [getStatus, uploadId, generatingStatus]);
 
   // get preview
   useEffect(() => {
-    if (!uploadId || generatingStatus !== "Generating") {
-      // generatingStatus가 "Generating"이 아닌 경우, 호출 중단
-      return;
-    }
+    if (!uploadId || generatingStatus !== "Generating") return;
 
     const fetchPreview = () => {
       getPreview();
-      // 다음 상태 확인을 위한 타임아웃 설정
       intervalId.current = window.setTimeout(fetchPreview, INTERVAL_TIME);
     };
 
-    fetchPreview(); // 최초 실행
+    fetchPreview();
 
     return () => {
-      // cleanup 함수에서 타임아웃 취소
       if (intervalId.current) clearTimeout(intervalId.current);
     };
   }, [getPreview, uploadId, generatingStatus]);

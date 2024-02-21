@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 
 import {
@@ -26,23 +26,6 @@ function App() {
   } = useModelData();
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
   const { isMobile } = useDisplay();
-
-  useEffect(() => {
-    console.log(" ");
-    console.log(
-      "================================================= START ================================================="
-    );
-    console.log("------------------------------ data ------------------------------");
-    console.log("model Data : ", modelData);
-    console.log("statusData : ", statusData);
-    console.log("previewData : ", previewData);
-    console.log("------------------------------ status ------------------------------");
-    console.log("generatingStatus : ", generatingStatus);
-    console.log(
-      "================================================== END =================================================="
-    );
-    console.log(" ");
-  }, [modelData, statusData, previewData, generatingStatus]);
 
   return (
     <main className="h-screen flex overflow-hidden">

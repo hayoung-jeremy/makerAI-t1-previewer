@@ -117,6 +117,9 @@ const useModelData = () => {
         else if (data.waitingCount < 0 && data.progressRatio === "100") {
           console.log("완료");
           getResultfiles();
+          setIsLoading(false);
+          setIsWaitingForQue(false);
+          setIsCompleted(true);
         }
         // 생성중
         else {
@@ -131,6 +134,7 @@ const useModelData = () => {
           }
           if (data.progressRatio === "100") {
             getResultfiles();
+            setIsCompleted(true);
           }
         }
       })
@@ -149,12 +153,6 @@ const useModelData = () => {
           getResultfiles();
         }
         console.log("checking temporary status...");
-      })
-      .finally(() => {
-        if (intervalId.current) clearTimeout(intervalId.current);
-        setIsLoading(false);
-        setIsGenerating(false);
-        setIsWaitingForQue(false);
       });
   }, [isCompleted, uploadId, getResultfiles]);
 

@@ -1,12 +1,19 @@
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
+import "tippy.js/animations/shift-away.css";
+
 import { Download } from "../icons";
-import { ModelData } from "../../hooks/useModelData";
 import { cls } from "../../utils";
+import { ModelData } from "../../hooks/useModelData";
+import useDisplay from "../../hooks/useDisplay";
 
 interface Props {
   modelData: ModelData | null;
 }
 
 const FileDownloader = ({ modelData }: Props) => {
+  const { isDesktop } = useDisplay();
+
   const filteredFiles = modelData?.resultFiles.filter(
     file => file.endsWith("remeshed-texture.glb") || file.endsWith(".zip")
   );
@@ -27,18 +34,24 @@ const FileDownloader = ({ modelData }: Props) => {
         {modelData &&
           filteredFiles &&
           filteredFiles.map((file, index) => (
-            <li
+            <Tippy
               key={`resultfile${index}`}
-              className={cls(
-                "flex items-center justify-center gap-3 px-4 rounded border transition-all",
-                "border-white/20 xl:hover:border-white text-white/60 xl:hover:text-white"
-              )}
+              content={file}
+              animation="shift-away"
+              placement={isDesktop ? "left" : "top"}
             >
-              <Download />
-              <a href={`${modelData.base_url}/${file}`} download={file} className="block py-2 truncate w-full">
-                {getDisplayName(file)}
-              </a>
-            </li>
+              <li
+                className={cls(
+                  "flex items-center justify-center gap-3 px-4 rounded border transition-all",
+                  "border-white/20 xl:hover:border-white text-white/60 xl:hover:text-white"
+                )}
+              >
+                <Download />
+                <a href={`${modelData.base_url}/${file}`} download={file} className="block py-2 truncate w-full">
+                  {getDisplayName(file)}
+                </a>
+              </li>
+            </Tippy>
           ))}
       </ul>
     </div>

@@ -1,14 +1,14 @@
 import { NoImage } from "../icons";
 import { SpinningLoader } from ".";
-import { StatusData } from "../../hooks/useModelData";
 
 interface Props {
-  statusData: StatusData | null;
   isLoading: boolean;
   isWaitingForQue: boolean;
+  originalImgURL: string | null;
+  removedBGImgURL: string | null;
 }
 
-const OriginalImageViewer = ({ statusData, isLoading, isWaitingForQue }: Props) => {
+const OriginalImageViewer = ({ isLoading, isWaitingForQue, originalImgURL, removedBGImgURL }: Props) => {
   return (
     <aside className="">
       <div className="grid grid-cols-2">
@@ -16,31 +16,37 @@ const OriginalImageViewer = ({ statusData, isLoading, isWaitingForQue }: Props) 
         <p className="mb-2 text-[18px]">Bg removed image</p>
       </div>
       <div className="w-full grid grid-cols-2">
-        {statusData && statusData.originalImage && !isLoading && (
+        {originalImgURL && originalImgURL !== "" && !isLoading ? (
           <div className="border border-white/20 overflow-hidden rounded-l-xl">
-            <img src={statusData.originalImage} className="w-full" />
+            <img src={originalImgURL} alt="original image" className="w-full" />
+          </div>
+        ) : (
+          <div className="w-full aspect-square flex items-center justify-center text-gray-500 border border-white/20 overflow-hidden rounded-l-xl">
+            {isLoading || isWaitingForQue ? (
+              <div className="flex items-center justify-start gap-2">
+                <SpinningLoader width={16} height={16} loaderBgColor="text-gray-500" />
+                <p className="text-gray-500">{isWaitingForQue ? "Waiting..." : "Loading..."}</p>
+              </div>
+            ) : (
+              <NoImage />
+            )}
           </div>
         )}
-        {statusData && statusData.removeBgImage && !isLoading && (
+        {removedBGImgURL && removedBGImgURL !== "" && !isLoading ? (
           <div className="border border-white/20 overflow-hidden rounded-r-xl">
-            <img src={statusData.removeBgImage} className="w-full" />
+            <img src={removedBGImgURL} className="w-full" />
           </div>
-        )}
-        {(isLoading || isWaitingForQue) && (
-          <div className="flex items-center justify-start gap-2">
-            <SpinningLoader width={16} height={16} loaderBgColor="text-gray-500" />
-            <p className="text-gray-500">{isWaitingForQue ? "Waiting..." : "Loading..."}</p>
+        ) : (
+          <div className="w-full aspect-square flex items-center justify-center text-gray-500 border border-white/20 border-l-0 overflow-hidden rounded-r-xl">
+            {isLoading || isWaitingForQue ? (
+              <div className="flex items-center justify-start gap-2">
+                <SpinningLoader width={16} height={16} loaderBgColor="text-gray-500" />
+                <p className="text-gray-500">{isWaitingForQue ? "Waiting..." : "Loading..."}</p>
+              </div>
+            ) : (
+              <NoImage />
+            )}
           </div>
-        )}
-        {!statusData && !isWaitingForQue && !isLoading && (
-          <>
-            <div className="flex items-center justify-start h-[40px] text-gray-500">
-              <NoImage />
-            </div>
-            <div className="flex items-center justify-start h-[40px] text-gray-500">
-              <NoImage />
-            </div>
-          </>
         )}
       </div>
     </aside>

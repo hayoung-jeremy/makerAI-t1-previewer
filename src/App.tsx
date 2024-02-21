@@ -24,35 +24,37 @@ function App() {
     isGenerating,
     isCompleted,
     isWaitingForQue,
+    originalImgURL,
+    removedBGImgURL,
+    previousVideoUrl,
   } = useModelData();
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
   const { isMobile } = useDisplay();
 
-  useEffect(() => {
-    console.log(" ");
-    console.log(
-      "================================================= START ================================================="
-    );
-    console.log("------------------------------ data ------------------------------");
-    console.log("model Data : ", modelData);
-    console.log("statusData : ", statusData);
-    console.log("previewData : ", previewData);
-    console.log("------------------------------ status ------------------------------");
-    console.log("isLoading : ", isLoading);
-    console.log("isGenerating : ", isGenerating);
-    console.log("isWaitingForQue : ", isWaitingForQue);
-    console.log("isCompleted : ", isCompleted);
-    console.log(
-      "================================================== END =================================================="
-    );
-    console.log(" ");
-  }, [modelData, statusData, previewData, isCompleted, isLoading, isGenerating, isWaitingForQue]);
+  // useEffect(() => {
+  //   console.log(" ");
+  //   console.log(
+  //     "================================================= START ================================================="
+  //   );
+  //   console.log("------------------------------ data ------------------------------");
+  //   console.log("model Data : ", modelData);
+  //   console.log("statusData : ", statusData);
+  //   console.log("previewData : ", previewData);
+  //   console.log("------------------------------ status ------------------------------");
+  //   console.log("isLoading : ", isLoading);
+  //   console.log("isGenerating : ", isGenerating);
+  //   console.log("isWaitingForQue : ", isWaitingForQue);
+  //   console.log("isCompleted : ", isCompleted);
+  //   console.log(
+  //     "================================================== END =================================================="
+  //   );
+  //   console.log(" ");
+  // }, [modelData, statusData, previewData, isCompleted, isLoading, isGenerating, isWaitingForQue]);
 
   return (
     <main className="h-screen flex overflow-hidden">
       <div className="w-[100%]">
         <Canvas camera={{ fov: 60 }} gl={{ antialias: true }} dpr={[1, 2]}>
-          {/* <ModelViewer modelUrl={textureModifiedModelURL} /> */}
           <Suspense fallback={<ProgressLoader />}>
             {modelData && isCompleted && textureModifiedModelURL !== "" && textureModifiedModelURL !== undefined && (
               <ModelViewer modelUrl={textureModifiedModelURL} />
@@ -87,7 +89,12 @@ function App() {
       >
         <div className="flex flex-col gap-5 overflow-y-auto px-5 py-6 h-screen">
           <StatusViewer statusData={statusData} />
-          <OriginalImageViewer statusData={statusData} isLoading={isLoading} isWaitingForQue={isWaitingForQue} />
+          <OriginalImageViewer
+            isLoading={isLoading}
+            isWaitingForQue={isWaitingForQue}
+            originalImgURL={originalImgURL}
+            removedBGImgURL={removedBGImgURL}
+          />
           <Previewer
             previewData={previewData}
             isLoading={isLoading}

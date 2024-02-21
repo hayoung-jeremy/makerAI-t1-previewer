@@ -16,7 +16,9 @@ const Previewer = ({ isWaitingForQue, isLoading, previewData }: Props) => {
         {(isLoading || isWaitingForQue || previewData?.video === "") && (
           <div className="flex items-center justify-start gap-2">
             <SpinningLoader width={16} height={16} loaderBgColor="text-gray-500" />
-            <p className="text-gray-500">{isWaitingForQue ? "Waiting..." : "Loading..."}</p>
+            <p className="text-gray-500">
+              {isWaitingForQue ? "Waiting..." : previewData?.video === "" ? "Creating a preview video" : "Loading..."}
+            </p>
           </div>
         )}
         {previewData && previewData.video !== "" && (

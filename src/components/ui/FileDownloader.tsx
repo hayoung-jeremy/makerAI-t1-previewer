@@ -35,7 +35,7 @@ const FileDownloader = ({ modelData, isLoading }: Props) => {
               )}
             >
               <Download />
-              <a href={`${modelData.baseUrl}/${file}`} download={file} className="block py-2 truncate w-full">
+              <a href={`${modelData.base_url}/${file}`} download={file} className="block py-2 truncate w-full">
                 {file}
               </a>
             </li>

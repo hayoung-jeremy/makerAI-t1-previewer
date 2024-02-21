@@ -9,7 +9,7 @@ const resultUrl = "https://ai-result.altava.com/result/5/";
 const INTERVAL_TIME = 2000;
 
 export interface ModelData {
-  baseUrl: string;
+  base_url: string;
   result: number;
   resultFiles: string[];
   uploadId: string;
@@ -43,12 +43,18 @@ const useModelData = () => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const [textureModifiedModelURL, setTextureModifiedModelURL] = useState("");
+  const [originalImgURL, setOriginalImgURL] = useState("");
+  const [removedBGImgURL, setRemovedBGImgURL] = useState("");
+  const [previousVideoUrl, setPreviousVideoUrl] = useState("");
 
   const getPreview = useCallback(
     () =>
       fetch(previewUrl + uploadId)
         .then(res => res.json())
-        .then((data: PreviewData) => setPreviewData(data))
+        .then((data: PreviewData) => {
+          console.log("Preview data : ", data);
+          setPreviewData(data);
+        })
         .catch(err => {
           setIsLoading(true);
           console.log("Preview API Call Error", err);
@@ -60,10 +66,33 @@ const useModelData = () => {
     fetch(resultUrl + uploadId)
       .then(res => res.json())
       .then((data: ModelData) => {
-        console.log("Result API Call Success", data);
+        console.log("ModelData : ", data);
         if (data.resultFiles.some(file => file.endsWith(".zip"))) {
           setModelData(data);
           getPreview();
+
+          const originalImgFile = data.resultFiles.filter(file => {
+            const lowerCaseFile = file.toLowerCase();
+            return (
+              (lowerCaseFile.endsWith(".png") || lowerCaseFile.endsWith(".jpg") || lowerCaseFile.endsWith(".jpeg")) &&
+              !lowerCaseFile.endsWith("_albedo.png") &&
+              !lowerCaseFile.endsWith("_rgba.png")
+            );
+          });
+
+          const removedBGImgFile = data.resultFiles.filter(file => {
+            const lowerCaseFile = file.toLowerCase();
+            return lowerCaseFile.endsWith("_rgba.png");
+          });
+
+          if (originalImgFile) {
+            setOriginalImgURL(`${data.base_url}/${originalImgFile}`);
+          }
+
+          if (removedBGImgFile) {
+            setRemovedBGImgURL(`${data.base_url}/${removedBGImgFile}`);
+          }
+
           setIsCompleted(true);
         }
       })
@@ -77,22 +106,29 @@ const useModelData = () => {
     fetch(statusUrl + uploadId)
       .then(res => res.json())
       .then((data: StatusData) => {
+        console.log("Status data : ", data);
         // 대기열 상태
         if (data.waitingCount > 0) {
           setIsWaitingForQue(true);
           setIsLoading(false);
           setStatusData(data);
-        } else if (data.waitingCount < 0) {
-          //
         }
-
-        // 진행률 값이 정상적인 경우에 대한 UI 처리 ( 100% 포함 )
+        // 완료
+        else if (data.waitingCount < 0 && data.progressRatio === "100") {
+          console.log("완료");
+          getResultfiles();
+        }
+        // 생성중
         else {
           setIsGenerating(true);
           setIsLoading(false);
           setIsWaitingForQue(false);
           setStatusData(data);
-          // 100% 인 경우에는 여기서 최종 완료 체크
+
+          if (data.originalImage && data.removeBgImage) {
+            setOriginalImgURL(data.originalImage);
+            setRemovedBGImgURL(data.removeBgImage); // 100% 인 경우에는 여기서 최종 완료 체크
+          }
           if (data.progressRatio === "100") {
             getResultfiles();
           }
@@ -113,6 +149,12 @@ const useModelData = () => {
           getResultfiles();
         }
         console.log("checking temporary status...");
+      })
+      .finally(() => {
+        if (intervalId.current) clearTimeout(intervalId.current);
+        setIsLoading(false);
+        setIsGenerating(false);
+        setIsWaitingForQue(false);
       });
   }, [isCompleted, uploadId, getResultfiles]);
 
@@ -150,8 +192,8 @@ const useModelData = () => {
 
   useEffect(() => {
     if (!modelData) return;
-    const modifiedModelFile = modelData.resultFiles.find((file: string) => file === "model-modified-texture.glb");
-    setTextureModifiedModelURL(`${modelData.baseUrl}/${modifiedModelFile}`);
+    const modifiedModelFile = modelData.resultFiles.find((file: string) => file.endsWith("remeshed-texture.glb"));
+    setTextureModifiedModelURL(`${modelData.base_url}/${modifiedModelFile}`);
   }, [modelData]);
 
   return {
@@ -163,6 +205,9 @@ const useModelData = () => {
     previewData,
     statusData,
     textureModifiedModelURL,
+    originalImgURL,
+    removedBGImgURL,
+    previousVideoUrl,
   };
 };
 

@@ -71,7 +71,9 @@ function App() {
             originalImgURL={originalImgURL}
             removedBGImgURL={removedBGImgURL}
           />
-          <Previewer previewData={previewData} generatingStatus={generatingStatus} />
+          {generatingStatus !== "Completed" && (
+            <Previewer previewData={previewData} generatingStatus={generatingStatus} />
+          )}
           {generatingStatus === "Completed" && <FileDownloader modelData={modelData} />}
         </div>
 

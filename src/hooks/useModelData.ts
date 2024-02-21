@@ -110,9 +110,12 @@ const useModelData = () => {
         }
         // 완료
         else if (data.waitingCount < 0 && data.progressRatio === "100") {
-          console.log("완료");
           getResultfiles();
           setGeneratingStatus("Completed");
+          if (intervalId.current !== undefined) {
+            clearTimeout(intervalId.current);
+            intervalId.current = undefined;
+          }
         }
         // 생성중
         else {
@@ -128,13 +131,12 @@ const useModelData = () => {
           }
         }
       })
-      .catch(err => {
+      .catch(() => {
         // 오류가 발생하는 케이스
         // 1. 진행률이 0 일 때
         // 2. 진행률이 99.5 이상일 때
         // 위 2가지 케이스는 구분할 수 없음
         // 그러므로 하나의 UI 로 퉁쳐야 함
-        console.log("진행률 0 or 99.5일 때 : ", err);
         setGeneratingStatus("Loading");
         if (generatingStatus !== "Completed") {
           getResultfiles();

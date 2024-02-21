@@ -29,17 +29,18 @@ const Previewer = ({ previewData, generatingStatus }: Props) => {
         )}
         {previewData && previewData.gif !== "" && (
           <motion.img
+            style={{ display: isGifLoaded ? "block" : "none" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             src={previewData.baseUrl + "/" + previewData.gif}
             alt="preview gif"
             className="w-full"
             onLoad={() => {
-              console.log("gif loaded");
+              // console.log("gif loaded");
               setIsGifLoaded(true);
             }}
             onError={() => {
-              console.log("gif error");
+              // console.log("gif error");
               setIsGifLoaded(false);
             }}
           />

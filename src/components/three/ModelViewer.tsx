@@ -43,8 +43,6 @@ const ModelViewer = ({ modelUrl }: Props) => {
     });
   }, [glb.scene, toggleToSeeWireframe]);
 
-  console.log("glb : ", glb);
-
   return (
     <Float
       speed={4} // Animation speed, defaults to 1

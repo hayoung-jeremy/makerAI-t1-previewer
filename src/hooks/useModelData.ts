@@ -17,7 +17,7 @@ export interface ModelData {
 
 export interface PreviewData {
   baseUrl: string;
-  video: string;
+  gif: string;
 }
 
 export interface StatusData {
@@ -52,14 +52,21 @@ const useModelData = () => {
       fetch(previewUrl + uploadId)
         .then(res => res.json())
         .then((data: PreviewData) => {
-          console.log("Preview data : ", data);
+          // data.gif가 이전 URL과 동일하지 않을 때만 처리
+          if (data.gif !== previousVideoUrl) {
+            // data.gif가 존재하면 새 URL로 상태 업데이트
+            if (data.gif) {
+              setPreviousVideoUrl(data.gif);
+            }
+            // data.gif가 비어있지만 이전 URL이 존재하는 경우
+          }
           setPreviewData(data);
         })
         .catch(err => {
           setIsLoading(true);
           console.log("Preview API Call Error", err);
         }),
-    [uploadId]
+    [uploadId, previousVideoUrl]
   );
 
   const getResultfiles = useCallback(() => {

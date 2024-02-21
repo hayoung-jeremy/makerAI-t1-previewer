@@ -9,7 +9,7 @@ const StatusViewer = ({ statusData }: Props) => {
   return (
     <div className="grid grid-cols-2">
       <p>
-        <span className="text-[18px]">Process</span> :{" "}
+        <span className="text-[18px] text-gray-400">Process</span> :{" "}
         <span
           className={cls(
             "font-semibold",
@@ -23,7 +23,7 @@ const StatusViewer = ({ statusData }: Props) => {
         <p>
           <span className="text-[18px]">Queue</span> :{" "}
           {statusData.waitingCount > 0 && (
-            <span className="text-red-400 font-semibold">{statusData?.waitingCount}</span>
+            <span className="text-yellow-400 font-semibold">{statusData?.waitingCount}</span>
           )}
         </p>
       ) : null}

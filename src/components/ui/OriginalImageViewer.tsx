@@ -11,7 +11,7 @@ interface Props {
 const OriginalImageViewer = ({ generatingStatus, originalImgURL, removedBGImgURL }: Props) => {
   return (
     <aside className="">
-      <div className="grid grid-cols-2">
+      <div className="grid grid-cols-2 text-gray-400">
         <p className="mb-2 text-[18px]">Original image</p>
         <p className="mb-2 text-[18px]">Bg removed image</p>
       </div>
@@ -33,7 +33,7 @@ const OriginalImageViewer = ({ generatingStatus, originalImgURL, removedBGImgURL
           </div>
         )}
         {removedBGImgURL && removedBGImgURL !== "" && generatingStatus !== "Loading" ? (
-          <div className="border border-white/20 overflow-hidden rounded-r-xl">
+          <div className="border border-white/20 border-l-0 overflow-hidden rounded-r-xl">
             <img src={removedBGImgURL} className="object-contain w-full h-full" />
           </div>
         ) : (

@@ -29,7 +29,7 @@ const FileDownloader = ({ modelData }: Props) => {
   };
   return (
     <div>
-      <h2 className="text-[18px] mb-2">FileDownloader</h2>
+      <h2 className="text-[18px] mb-2 text-gray-400">FileDownloader</h2>
       <ul className="flex flex-col gap-2">
         {modelData &&
           filteredFiles &&

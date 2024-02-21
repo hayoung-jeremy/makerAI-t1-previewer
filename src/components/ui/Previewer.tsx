@@ -13,7 +13,7 @@ const Previewer = ({ previewData, generatingStatus }: Props) => {
 
   return (
     <div>
-      <h2 className="text-[18px] mb-2">Preview</h2>
+      <h2 className="text-[18px] mb-2 text-gray-400">Preview</h2>
       <div className="flex flex-col gap-[2px] rounded-xl overflow-hidden">
         {(generatingStatus === "Loading" || generatingStatus === "Waiting" || !isGifLoaded) && (
           <div className="flex items-center justify-start gap-2">

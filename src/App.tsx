@@ -54,11 +54,11 @@ function App() {
 
       <aside
         className={cls(
-          "fixed top-0 right-0",
+          "fixed top-0 right-0 select-none",
           "w-screen",
           "md:max-w-[360px]",
           "xl:w-[20%] xl:max-w-none xl:min-w-[360px]",
-          "bg-[#222]",
+          "bg-[#212121]",
           "shadow-[-12px_0px_12px_8px_#00000024]",
           "transition-all duration-300",
           isSideBarOpen ? "" : "translate-x-[100%]"

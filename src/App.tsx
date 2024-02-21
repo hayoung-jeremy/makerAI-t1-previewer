@@ -20,58 +20,52 @@ function App() {
     modelData,
     statusData,
     previewData,
-    isLoading,
-    isGenerating,
-    isCompleted,
-    isWaitingForQue,
+    generatingStatus,
     originalImgURL,
     removedBGImgURL,
-    previousVideoUrl,
   } = useModelData();
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
   const { isMobile } = useDisplay();
 
-  // useEffect(() => {
-  //   console.log(" ");
-  //   console.log(
-  //     "================================================= START ================================================="
-  //   );
-  //   console.log("------------------------------ data ------------------------------");
-  //   console.log("model Data : ", modelData);
-  //   console.log("statusData : ", statusData);
-  //   console.log("previewData : ", previewData);
-  //   console.log("------------------------------ status ------------------------------");
-  //   console.log("isLoading : ", isLoading);
-  //   console.log("isGenerating : ", isGenerating);
-  //   console.log("isWaitingForQue : ", isWaitingForQue);
-  //   console.log("isCompleted : ", isCompleted);
-  //   console.log(
-  //     "================================================== END =================================================="
-  //   );
-  //   console.log(" ");
-  // }, [modelData, statusData, previewData, isCompleted, isLoading, isGenerating, isWaitingForQue]);
+  useEffect(() => {
+    console.log(" ");
+    console.log(
+      "================================================= START ================================================="
+    );
+    console.log("------------------------------ data ------------------------------");
+    console.log("model Data : ", modelData);
+    console.log("statusData : ", statusData);
+    console.log("previewData : ", previewData);
+    console.log("------------------------------ status ------------------------------");
+    console.log("generatingStatus : ", generatingStatus);
+    console.log(
+      "================================================== END =================================================="
+    );
+    console.log(" ");
+  }, [modelData, statusData, previewData, generatingStatus]);
 
   return (
     <main className="h-screen flex overflow-hidden">
       <div className="w-[100%]">
         <Canvas camera={{ fov: 60 }} gl={{ antialias: true }} dpr={[1, 2]}>
           <Suspense fallback={<ProgressLoader />}>
-            {modelData && isCompleted && textureModifiedModelURL !== "" && textureModifiedModelURL !== undefined && (
-              <ModelViewer modelUrl={textureModifiedModelURL} />
-            )}
-            {isGenerating && <DistortLoader statusData={statusData} />}
+            {modelData &&
+              generatingStatus === "Completed" &&
+              textureModifiedModelURL !== "" &&
+              textureModifiedModelURL !== undefined && <ModelViewer modelUrl={textureModifiedModelURL} />}
+            {generatingStatus === "Generating" && <DistortLoader statusData={statusData} />}
           </Suspense>
-          <EnvironmentSettings isCompleted={isCompleted} />
+          <EnvironmentSettings isCompleted={generatingStatus === "Completed"} />
         </Canvas>
       </div>
 
-      {(isLoading || isWaitingForQue) && (
+      {(generatingStatus === "Loading" || generatingStatus === "Waiting") && (
         <p
           style={{ textShadow: "0px 0px 8px #ffffff80" }}
           className="fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] text-[48px] leading-[48px] select-none"
         >
-          {isLoading && "Loading..."}
-          {isWaitingForQue && "Waiting for previous work"}
+          {generatingStatus === "Loading" && "Loading..."}
+          {generatingStatus === "Waiting" && "Waiting for previous work"}
         </p>
       )}
 
@@ -90,21 +84,15 @@ function App() {
         <div className="flex flex-col gap-5 overflow-y-auto px-5 py-6 h-screen">
           <StatusViewer statusData={statusData} />
           <OriginalImageViewer
-            isLoading={isLoading}
-            isWaitingForQue={isWaitingForQue}
+            generatingStatus={generatingStatus}
             originalImgURL={originalImgURL}
             removedBGImgURL={removedBGImgURL}
           />
-          <Previewer
-            previewData={previewData}
-            isLoading={isLoading}
-            isWaitingForQue={isWaitingForQue}
-            isCompleted={isCompleted}
-          />
-          {isCompleted && <FileDownloader modelData={modelData} isLoading={isLoading} />}
+          <Previewer previewData={previewData} generatingStatus={generatingStatus} />
+          {generatingStatus === "Completed" && <FileDownloader modelData={modelData} />}
         </div>
 
-        {modelData && isCompleted && (
+        {modelData && generatingStatus === "Completed" && (
           <div className="absolute top-[20px] left-[-72px]">
             <ToggleToSeeWireframeButton />
           </div>

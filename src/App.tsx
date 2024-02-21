@@ -45,7 +45,7 @@ function App() {
       {(generatingStatus === "Loading" || generatingStatus === "Waiting") && (
         <p
           style={{ textShadow: "0px 0px 8px #ffffff80" }}
-          className="fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] text-[48px] leading-[48px] select-none"
+          className="fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] text-[20px] md:text-[32px] xl:text-[48px] leading-[48px] select-none w-full text-center"
         >
           {generatingStatus === "Loading" && "Loading..."}
           {generatingStatus === "Waiting" && "Waiting for previous work"}

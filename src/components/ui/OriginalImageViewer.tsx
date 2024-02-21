@@ -18,7 +18,7 @@ const OriginalImageViewer = ({ isLoading, isWaitingForQue, originalImgURL, remov
       <div className="w-full grid grid-cols-2">
         {originalImgURL && originalImgURL !== "" && !isLoading ? (
           <div className="border border-white/20 overflow-hidden rounded-l-xl">
-            <img src={originalImgURL} alt="original image" className="w-full" />
+            <img src={originalImgURL} alt="original image" className="object-contain w-full h-full" />
           </div>
         ) : (
           <div className="w-full aspect-square flex items-center justify-center text-gray-500 border border-white/20 overflow-hidden rounded-l-xl">
@@ -34,7 +34,7 @@ const OriginalImageViewer = ({ isLoading, isWaitingForQue, originalImgURL, remov
         )}
         {removedBGImgURL && removedBGImgURL !== "" && !isLoading ? (
           <div className="border border-white/20 overflow-hidden rounded-r-xl">
-            <img src={removedBGImgURL} className="w-full" />
+            <img src={removedBGImgURL} className="object-contain w-full h-full" />
           </div>
         ) : (
           <div className="w-full aspect-square flex items-center justify-center text-gray-500 border border-white/20 border-l-0 overflow-hidden rounded-r-xl">

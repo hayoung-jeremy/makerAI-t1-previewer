@@ -28,6 +28,7 @@ const FileDownloader = ({ modelData }: Props) => {
           filteredFiles &&
           filteredFiles.map((file, index) => (
             <li
+              key={`resultfile${index}`}
               className={cls(
                 "flex items-center justify-center gap-3 px-4 rounded border transition-all",
                 "border-white/20 xl:hover:border-white text-white/60 xl:hover:text-white"

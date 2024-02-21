@@ -6,7 +6,7 @@ const previewUrl = `${apiUrl}/preview/`;
 const statusUrl = `${apiUrl}/status/`;
 const resultUrl = "https://ai-result.altava.com/result/5/";
 
-const INTERVAL_TIME = 2000;
+const INTERVAL_TIME = 1000 * 60 * 5;
 
 export interface ModelData {
   base_url: string;
@@ -45,28 +45,17 @@ const useModelData = () => {
   const [textureModifiedModelURL, setTextureModifiedModelURL] = useState("");
   const [originalImgURL, setOriginalImgURL] = useState("");
   const [removedBGImgURL, setRemovedBGImgURL] = useState("");
-  const [previousVideoUrl, setPreviousVideoUrl] = useState("");
 
   const getPreview = useCallback(
     () =>
       fetch(previewUrl + uploadId)
         .then(res => res.json())
-        .then((data: PreviewData) => {
-          // data.gif가 이전 URL과 동일하지 않을 때만 처리
-          if (data.gif !== previousVideoUrl) {
-            // data.gif가 존재하면 새 URL로 상태 업데이트
-            if (data.gif) {
-              setPreviousVideoUrl(data.gif);
-            }
-            // data.gif가 비어있지만 이전 URL이 존재하는 경우
-          }
-          setPreviewData(data);
-        })
+        .then((data: PreviewData) => setPreviewData(data))
         .catch(err => {
           setIsLoading(true);
           console.log("Preview API Call Error", err);
         }),
-    [uploadId, previousVideoUrl]
+    [uploadId]
   );
 
   const getResultfiles = useCallback(() => {
@@ -114,11 +103,11 @@ const useModelData = () => {
       .then(res => res.json())
       .then((data: StatusData) => {
         console.log("Status data : ", data);
+        setStatusData(data);
         // 대기열 상태
         if (data.waitingCount > 0) {
           setIsWaitingForQue(true);
           setIsLoading(false);
-          setStatusData(data);
         }
         // 완료
         else if (data.waitingCount < 0 && data.progressRatio === "100") {
@@ -126,6 +115,7 @@ const useModelData = () => {
           getResultfiles();
           setIsLoading(false);
           setIsWaitingForQue(false);
+          setIsGenerating(false);
           setIsCompleted(true);
         }
         // 생성중
@@ -133,7 +123,7 @@ const useModelData = () => {
           setIsGenerating(true);
           setIsLoading(false);
           setIsWaitingForQue(false);
-          setStatusData(data);
+          setIsCompleted(false);
 
           if (data.originalImage && data.removeBgImage) {
             setOriginalImgURL(data.originalImage);
@@ -141,6 +131,9 @@ const useModelData = () => {
           }
           if (data.progressRatio === "100") {
             getResultfiles();
+            setIsGenerating(false);
+            setIsLoading(false);
+            setIsWaitingForQue(false);
             setIsCompleted(true);
           }
         }
@@ -169,10 +162,12 @@ const useModelData = () => {
 
     const fetchStatus = () => {
       getStatus();
-      intervalId.current = window.setTimeout(fetchStatus, INTERVAL_TIME);
+      if (!isCompleted) {
+        intervalId.current = window.setTimeout(fetchStatus, INTERVAL_TIME);
+      }
     };
 
-    fetchStatus();
+    fetchStatus(); // 최초 실행
 
     return () => {
       if (intervalId.current) clearTimeout(intervalId.current);
@@ -181,19 +176,23 @@ const useModelData = () => {
 
   // get preview
   useEffect(() => {
-    if (!uploadId || isWaitingForQue || isLoading || isCompleted) return;
+    if (!uploadId || isWaitingForQue || isLoading || isCompleted) {
+      return;
+    }
 
     const fetchPreview = () => {
-      getPreview();
-      intervalId.current = window.setTimeout(fetchPreview, INTERVAL_TIME);
+      getPreview(); // getPreview 호출
+      if (!isCompleted) {
+        intervalId.current = window.setTimeout(fetchPreview, INTERVAL_TIME);
+      }
     };
 
-    fetchPreview();
+    fetchPreview(); // 최초 실행
 
     return () => {
       if (intervalId.current) clearTimeout(intervalId.current);
     };
-  }, [uploadId, isCompleted, isWaitingForQue, isLoading, getPreview]);
+  }, [getPreview, uploadId, isWaitingForQue, isLoading, isCompleted]);
 
   useEffect(() => {
     if (!modelData) return;
@@ -212,7 +211,6 @@ const useModelData = () => {
     textureModifiedModelURL,
     originalImgURL,
     removedBGImgURL,
-    previousVideoUrl,
   };
 };
 

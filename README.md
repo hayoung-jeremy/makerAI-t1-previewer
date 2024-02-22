@@ -7,7 +7,7 @@
 
 - git clone 후 `npm install` 또는 `pnpm install`
 - 루트 경로에 `.env` 파일 추가 및 아래 내용 작성
-  ```
+  ```bash
   VITE_API_URL = "http://10.190.140.55:8086" # getStatus, getPreview
   VITE_RESULT_URL = "https://ai-result.altava.com/result" # getResult
   ```

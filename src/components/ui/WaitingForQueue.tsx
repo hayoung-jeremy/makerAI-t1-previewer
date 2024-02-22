@@ -17,6 +17,15 @@ const WaitingForQueue = ({ waitingCount }: Props) => {
           {waitingCount * 3} hours
         </span>
       </span>
+      <span className="text-[#acacac] text-[14px] md:text-[18px] xl:text-[24px]">
+        Remaining Queue Before Your Turn :{" "}
+        <span
+          className={waitingCount > 0 ? "text-yellow-300" : "text-gray-500"}
+          style={{ textShadow: waitingCount > 0 ? "0px 0px 8px rgba(253,224,71,0.8)" : "" }}
+        >
+          {waitingCount}
+        </span>
+      </span>
     </>
   );
 };

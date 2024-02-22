@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-const apiUrl = "http://10.190.140.55:8086";
-const previewUrl = `${apiUrl}/preview/`;
-const statusUrl = `${apiUrl}/status/`;
-const resultUrl = "https://ai-result.altava.com/result/5/";
+const { VITE_API_URL, VITE_RESULT_URL } = import.meta.env;
+
+const previewUrl = `${VITE_API_URL}/preview/`;
+const statusUrl = `${VITE_API_URL}/status/`;
+const resultUrl = `${VITE_RESULT_URL}/5/`;
 
 const INTERVAL_TIME = 1000 * 5;
 

@@ -12,6 +12,6 @@
   VITE_RESULT_URL = "https://ai-result.altava.com/result" # getResult
   ```
 - 라이브 배포 시 pm2 사용
-  ```
+  ```bash
   pm2 start pnpm --name preview-pro -- start
   ```

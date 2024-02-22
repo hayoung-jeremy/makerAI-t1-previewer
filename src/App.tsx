@@ -7,6 +7,7 @@ import {
   StatusViewer,
   ToggleToSeeWireframeButton,
   FileDownloader,
+  WaitingForQueue,
 } from "./components/ui";
 import { DistortLoader, EnvironmentSettings, ModelViewer, ProgressLoader } from "./components/three";
 
@@ -41,16 +42,15 @@ function App() {
           <EnvironmentSettings isCompleted={generatingStatus === "Completed"} />
         </Canvas>
       </div>
-
-      {(generatingStatus === "Loading" || generatingStatus === "Waiting") && (
-        <p
-          style={{ textShadow: "0px 0px 8px #ffffff80" }}
-          className="fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] text-[20px] md:text-[32px] xl:text-[48px] leading-[48px] select-none w-full text-center"
-        >
-          {generatingStatus === "Loading" && "Loading..."}
-          {generatingStatus === "Waiting" && "Waiting for previous work"}
-        </p>
-      )}
+      <div className="fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] text-[20px] md:text-[32px] xl:text-[48px] select-none w-full text-center flex flex-col items-center justify-center gap-1">
+        {generatingStatus === "Loading" ? (
+          <p style={{ textShadow: "0px 0px 8px #ffffff80" }}>Loading...</p>
+        ) : generatingStatus === "Waiting" ? (
+          <WaitingForQueue waitingCount={statusData?.waitingCount ?? 0} />
+        ) : (
+          ""
+        )}
+      </div>
 
       <aside
         className={cls(

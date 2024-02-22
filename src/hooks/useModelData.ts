@@ -138,13 +138,9 @@ const useModelData = () => {
         // 2. 진행률이 99.5 이상일 때
         // 위 2가지 케이스는 구분할 수 없음
         // 그러므로 하나의 UI 로 퉁쳐야 함
-        setGeneratingStatus("Loading");
-        if (generatingStatus !== "Completed") {
-          getResultfiles();
-        }
         console.log("checking temporary status...");
       });
-  }, [uploadId, getResultfiles, generatingStatus]);
+  }, [uploadId, getResultfiles]);
 
   // get status
   useEffect(() => {

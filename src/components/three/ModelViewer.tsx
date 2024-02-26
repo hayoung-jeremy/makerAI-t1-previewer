@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useLoader } from "@react-three/fiber";
 import { Float } from "@react-three/drei";
 import { Mesh, MeshStandardMaterial, Object3D } from "three";
@@ -11,6 +12,9 @@ interface Props {
 }
 
 const ModelViewer = ({ modelUrl }: Props) => {
+  const { pathname } = useLocation();
+  const uploadId = pathname.split("/").pop();
+
   const glb = useLoader(GLTFLoader, modelUrl);
   const toggleToSeeWireframe = useWireframeStore(state => state.toggleToSeeWireframe);
 
@@ -50,7 +54,10 @@ const ModelViewer = ({ modelUrl }: Props) => {
       floatIntensity={1} // Up/down float intensity, works like a multiplier with floatingRange,defaults to 1
       floatingRange={[-0.1, 0.1]} // Range of y-axis values the object will float within, defaults to [-0.1,0.1]
     >
-      <primitive object={glb.scene} rotation={[-Math.PI / 2, 0, -Math.PI / 2]} />
+      <primitive
+        object={glb.scene}
+        rotation={uploadId === "2024022315232417" ? [0, 0, 0] : [-Math.PI / 2, 0, -Math.PI / 2]}
+      />
     </Float>
   );
 };

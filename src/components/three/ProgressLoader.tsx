@@ -9,7 +9,7 @@ function ProgressLoader() {
         style={{ textShadow: "0px 0px 8px #ffffff80" }}
         className="text-[48px] leading-[48px] select-none flex items-center justify-center gap-4"
       >
-        <span>{progress + "%"}</span>
+        <span>{progress.toFixed(2) + "%"}</span>
         <span>Loaded</span>
       </p>
     </Html>

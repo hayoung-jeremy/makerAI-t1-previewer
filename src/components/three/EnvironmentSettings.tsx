@@ -15,6 +15,7 @@ const EnvironmentSettings = ({ isCompleted }: Props) => {
         enabled={isCompleted}
         minDistance={1}
         maxDistance={4}
+        maxPolarAngle={Math.PI / 2 + 0.1}
         dollySpeed={isDesktop ? 0.5 : 1.6}
         mouseButtons={{ left: 1, middle: 8, right: 0, wheel: 8 }}
         touches={{ one: 32, two: 256, three: 0 }}

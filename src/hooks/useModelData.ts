@@ -73,7 +73,8 @@ const useModelData = () => {
             return (
               (lowerCaseFile.endsWith(".png") || lowerCaseFile.endsWith(".jpg") || lowerCaseFile.endsWith(".jpeg")) &&
               !lowerCaseFile.endsWith("_albedo.png") &&
-              !lowerCaseFile.endsWith("_rgba.png")
+              !lowerCaseFile.endsWith("_rgba.png") &&
+              !lowerCaseFile.includes("texture_kd")
             );
           });
 

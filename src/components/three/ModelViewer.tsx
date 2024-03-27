@@ -14,7 +14,7 @@ const ModelViewer = ({ modelUrl }: Props) => {
   const { pathname } = useLocation();
   const uploadId = pathname.split("/").pop();
 
-  const modelRef = useRef<Object3D>(null);
+  const originalMaterialsRef = useRef<Map<Object3D, MeshStandardMaterial | MeshStandardMaterial[]>>(new Map());
   const [gridPosition, setGridPosition] = useState<Vector3>(new Vector3(0, 0, 0));
 
   const glb = useLoader(GLTFLoader, modelUrl);
@@ -22,16 +22,16 @@ const ModelViewer = ({ modelUrl }: Props) => {
 
   useEffect(() => {
     const scene = glb.scene;
+
     scene.traverse((obj: Object3D) => {
       if (obj instanceof Mesh) {
-        const meshMaterial = obj.material;
-        meshMaterial.wireframe = toggleToSeeWireframe;
+        if (!originalMaterialsRef.current.has(obj)) {
+          originalMaterialsRef.current.set(obj, obj.material);
+        }
 
+        const originalMaterial = originalMaterialsRef.current.get(obj);
         if (toggleToSeeWireframe) {
-          // 원래의 material을 저장합니다.
-          obj.userData.originalMaterial = meshMaterial;
-
-          // MeshStandardMaterial로 변경하고 색상을 하얗게 설정합니다.
+          // 와이어프레임 모드로 전환
           const whiteMaterial = new MeshStandardMaterial({
             color: 0xffffff,
             wireframe: true,
@@ -39,12 +39,9 @@ const ModelViewer = ({ modelUrl }: Props) => {
             opacity: 0.3,
           });
           obj.material = whiteMaterial;
-        } else {
-          // 원래의 material로 되돌립니다.
-          if (obj.userData.originalMaterial) {
-            obj.material = obj.userData.originalMaterial;
-            obj.material.wireframe = false;
-          }
+        } else if (originalMaterial) {
+          // 원본 머티리얼로 복원
+          obj.material = originalMaterial;
         }
       }
     });
@@ -52,15 +49,13 @@ const ModelViewer = ({ modelUrl }: Props) => {
     const bbox = new Box3().setFromObject(scene);
     const height = bbox.max.y - bbox.min.y;
     setGridPosition(new Vector3(0, -height / 2, 0)); // Grid를 모델 아래로 이동
-  }, [glb.scene, toggleToSeeWireframe]);
+  }, [glb.scene, toggleToSeeWireframe, modelUrl]);
 
   return (
     <>
-      <primitive
-        ref={modelRef}
-        object={glb.scene}
-        rotation={uploadId === "2024022315232417" ? [0, 0, 0] : [-Math.PI / 2, 0, -Math.PI / 2]}
-      />
+      <group rotation={uploadId === "2024022315232417" ? [0, 0, 0] : [-Math.PI / 2, 0, -Math.PI / 2]}>
+        <primitive object={glb.scene} />
+      </group>
       <gridHelper args={[10, 10]} position={gridPosition} />
     </>
   );

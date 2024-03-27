@@ -27,7 +27,7 @@ const DistortLoader = ({ statusData }: Props) => {
     meshRef.current.scale.z = MathUtils.lerp(meshRef.current.scale.z, targetScale, 0.1);
   });
   return (
-    <group>
+    <group position={[0, 0, -2]}>
       <Float
         speed={4} // Animation speed, defaults to 1
         rotationIntensity={0} // XYZ rotation intensity, defaults to 1

@@ -30,6 +30,12 @@ export interface StatusData {
 
 export type GeneratingStatus = "Loading" | "Waiting" | "Generating" | "Completed";
 
+type ResultModelType = "Original" | "Remeshed";
+export interface ResultModels {
+  type: ResultModelType;
+  url: string;
+}
+
 const useModelData = () => {
   const location = useLocation();
   const pathname = location.pathname;
@@ -43,8 +49,7 @@ const useModelData = () => {
 
   const [generatingStatus, setGeneratingStatus] = useState<GeneratingStatus>("Loading");
 
-  const [textureModifiedModelURL, setTextureModifiedModelURL] = useState("");
-  const [resultModelURLs, setResultModelURLs] = useState<string[]>([]);
+  const [resultModels, setResultModels] = useState<ResultModels[]>([]);
   const [originalImgURL, setOriginalImgURL] = useState("");
   const [removedBGImgURL, setRemovedBGImgURL] = useState("");
 
@@ -179,22 +184,24 @@ const useModelData = () => {
   useEffect(() => {
     if (!modelData) return;
 
-    let originalModel = "";
-    let remeshedModel = "";
+    let originalModel: ResultModels = { type: "Original", url: "" };
+    let remeshedModel: ResultModels = { type: "Remeshed", url: "" };
 
     modelData.resultFiles.forEach(file => {
-      if (file.endsWith(".glb") && !file.includes("texture") && !file.includes("arranged")) {
-        originalModel = `${modelData.base_url}/${file}`;
+      if (
+        file.endsWith(".glb") &&
+        !file.includes("texture") &&
+        !file.includes("arranged") &&
+        !file.includes("remeshed")
+      ) {
+        originalModel = { type: "Original", url: `${modelData.base_url}/${file}` };
       } else if (file.endsWith("remeshed-texture.glb")) {
-        remeshedModel = `${modelData.base_url}/${file}`;
+        remeshedModel = { type: "Remeshed", url: `${modelData.base_url}/${file}` };
       }
     });
 
-    const newModelURLs = [originalModel, remeshedModel].filter(url => url !== "");
-    setResultModelURLs(newModelURLs);
-
-    const modifiedModelFile = modelData.resultFiles.find((file: string) => file.endsWith("remeshed-texture.glb"));
-    setTextureModifiedModelURL(`${modelData.base_url}/${modifiedModelFile}`);
+    const newModelURLs: ResultModels[] = [originalModel, remeshedModel].filter(model => model.url !== "");
+    setResultModels(newModelURLs);
   }, [modelData]);
 
   return {
@@ -202,10 +209,9 @@ const useModelData = () => {
     modelData,
     previewData,
     statusData,
-    textureModifiedModelURL,
     originalImgURL,
     removedBGImgURL,
-    resultModelURLs,
+    resultModels,
   };
 };
 

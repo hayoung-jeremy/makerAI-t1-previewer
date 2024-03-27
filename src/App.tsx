@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 
 import {
@@ -20,27 +20,22 @@ function App() {
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const {
-    textureModifiedModelURL,
-    modelData,
-    statusData,
-    previewData,
-    generatingStatus,
-    originalImgURL,
-    removedBGImgURL,
-    resultModelURLs,
-  } = useModelData();
+  const { modelData, statusData, previewData, generatingStatus, originalImgURL, removedBGImgURL, resultModels } =
+    useModelData();
   const { isMobile } = useDisplay();
+
+  useEffect(() => {
+    console.log("resultModels : ", resultModels);
+  }, [resultModels, modelData]);
 
   return (
     <main className="h-screen flex overflow-hidden">
       <div className="w-[100%]">
         <Canvas camera={{ fov: 60, position: [0, 0, 2] }} gl={{ antialias: true }} dpr={[1, 2]}>
           <Suspense fallback={<ProgressLoader />}>
-            {modelData &&
-              generatingStatus === "Completed" &&
-              textureModifiedModelURL !== "" &&
-              textureModifiedModelURL !== undefined && <ModelViewer modelUrl={resultModelURLs[selectedTab]} />}
+            {modelData && generatingStatus === "Completed" && resultModels.length > 0 && (
+              <ModelViewer modelUrl={resultModels[selectedTab].url} />
+            )}
             {generatingStatus === "Generating" && <DistortLoader statusData={statusData} />}
           </Suspense>
           <EnvironmentSettings isCompleted={generatingStatus === "Completed"} />
@@ -57,7 +52,7 @@ function App() {
       </div>
 
       {generatingStatus === "Completed" && (
-        <ResultModelSelector selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+        <ResultModelSelector selectedTab={selectedTab} setSelectedTab={setSelectedTab} resultModels={resultModels} />
       )}
 
       <aside

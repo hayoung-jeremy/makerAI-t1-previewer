@@ -18,8 +18,6 @@ const ModelViewer = ({ modelUrl }: Props) => {
   const glb = useLoader(GLTFLoader, modelUrl);
   const toggleToSeeWireframe = useWireframeStore(state => state.toggleToSeeWireframe);
 
-  console.log("glb : ", glb);
-
   useEffect(() => {
     glb.scene.traverse((obj: Object3D) => {
       if (obj instanceof Mesh) {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useLoader } from "@react-three/fiber";
-import { Box3, Mesh, MeshStandardMaterial, Object3D, Vector3 } from "three";
+import { Box3, Group, Mesh, MeshStandardMaterial, Object3D, Vector3 } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
 
 import { useWireframeStore } from "../../store";
@@ -14,6 +14,7 @@ const ModelViewer = ({ modelUrl }: Props) => {
   const { pathname } = useLocation();
   const uploadId = pathname.split("/").pop();
 
+  const modelRef = useRef<Group>(null);
   const originalMaterialsRef = useRef<Map<Object3D, MeshStandardMaterial | MeshStandardMaterial[]>>(new Map());
   const [gridPosition, setGridPosition] = useState<Vector3>(new Vector3(0, 0, 0));
 
@@ -44,16 +45,21 @@ const ModelViewer = ({ modelUrl }: Props) => {
           obj.material = originalMaterial;
         }
       }
-    });
 
-    const bbox = new Box3().setFromObject(scene);
-    const height = bbox.max.y - bbox.min.y;
-    setGridPosition(new Vector3(0, -height / 2, 0)); // Grid를 모델 아래로 이동
+      if (modelRef.current) {
+        const bbox = new Box3().setFromObject(modelRef.current);
+        const height = bbox.max.y - bbox.min.y;
+
+        console.log(" Height : ", height);
+
+        setGridPosition(new Vector3(0, -height / 2, 0));
+      }
+    });
   }, [glb.scene, toggleToSeeWireframe, modelUrl]);
 
   return (
     <>
-      <group rotation={uploadId === "2024022315232417" ? [0, 0, 0] : [-Math.PI / 2, 0, -Math.PI / 2]}>
+      <group ref={modelRef} rotation={uploadId === "2024022315232417" ? [0, 0, 0] : [-Math.PI / 2, 0, -Math.PI / 2]}>
         <primitive object={glb.scene} />
       </group>
       <gridHelper args={[10, 10]} position={gridPosition} />

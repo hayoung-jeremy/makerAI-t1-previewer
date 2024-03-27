@@ -1,8 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useLoader } from "@react-three/fiber";
-import { Float } from "@react-three/drei";
-import { Mesh, MeshStandardMaterial, Object3D } from "three";
+import { Box3, Mesh, MeshStandardMaterial, Object3D, Vector3 } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
 
 import { useWireframeStore } from "../../store";
@@ -15,11 +14,15 @@ const ModelViewer = ({ modelUrl }: Props) => {
   const { pathname } = useLocation();
   const uploadId = pathname.split("/").pop();
 
+  const modelRef = useRef<Object3D>(null);
+  const [gridPosition, setGridPosition] = useState<Vector3>(new Vector3(0, 0, 0));
+
   const glb = useLoader(GLTFLoader, modelUrl);
   const toggleToSeeWireframe = useWireframeStore(state => state.toggleToSeeWireframe);
 
   useEffect(() => {
-    glb.scene.traverse((obj: Object3D) => {
+    const scene = glb.scene;
+    scene.traverse((obj: Object3D) => {
       if (obj instanceof Mesh) {
         const meshMaterial = obj.material;
         meshMaterial.wireframe = toggleToSeeWireframe;
@@ -45,20 +48,21 @@ const ModelViewer = ({ modelUrl }: Props) => {
         }
       }
     });
+
+    const bbox = new Box3().setFromObject(scene);
+    const height = bbox.max.y - bbox.min.y;
+    setGridPosition(new Vector3(0, -height / 2, 0)); // Grid를 모델 아래로 이동
   }, [glb.scene, toggleToSeeWireframe]);
 
   return (
-    <Float
-      speed={4} // Animation speed, defaults to 1
-      rotationIntensity={0.4} // XYZ rotation intensity, defaults to 1
-      floatIntensity={1} // Up/down float intensity, works like a multiplier with floatingRange,defaults to 1
-      floatingRange={[-0.1, 0.1]} // Range of y-axis values the object will float within, defaults to [-0.1,0.1]
-    >
+    <>
       <primitive
+        ref={modelRef}
         object={glb.scene}
         rotation={uploadId === "2024022315232417" ? [0, 0, 0] : [-Math.PI / 2, 0, -Math.PI / 2]}
       />
-    </Float>
+      <gridHelper args={[10, 10]} position={gridPosition} />
+    </>
   );
 };
 

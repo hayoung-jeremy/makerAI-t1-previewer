@@ -37,8 +37,8 @@ function App() {
               <ModelViewer modelUrl={resultModels[selectedTab].url} />
             )}
             {generatingStatus === "Generating" && <DistortLoader statusData={statusData} />}
+            <EnvironmentSettings isCompleted={generatingStatus === "Completed"} />
           </Suspense>
-          <EnvironmentSettings isCompleted={generatingStatus === "Completed"} />
         </Canvas>
       </div>
       <div className="fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] text-[20px] md:text-[32px] xl:text-[48px] select-none w-full text-center flex flex-col items-center justify-center gap-1">

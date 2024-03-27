@@ -8,6 +8,7 @@ import {
   ToggleToSeeWireframeButton,
   FileDownloader,
   WaitingForQueue,
+  ResultModelSelector,
 } from "./components/ui";
 import { DistortLoader, EnvironmentSettings, ModelViewer, ProgressLoader } from "./components/three";
 
@@ -16,6 +17,9 @@ import useModelData from "./hooks/useModelData";
 import useDisplay from "./hooks/useDisplay";
 
 function App() {
+  const [isSideBarOpen, setIsSideBarOpen] = useState(true);
+  const [selectedTab, setSelectedTab] = useState(0);
+
   const {
     textureModifiedModelURL,
     modelData,
@@ -24,19 +28,19 @@ function App() {
     generatingStatus,
     originalImgURL,
     removedBGImgURL,
+    resultModelURLs,
   } = useModelData();
-  const [isSideBarOpen, setIsSideBarOpen] = useState(true);
   const { isMobile } = useDisplay();
 
   return (
     <main className="h-screen flex overflow-hidden">
       <div className="w-[100%]">
-        <Canvas camera={{ fov: 60 }} gl={{ antialias: true }} dpr={[1, 2]}>
+        <Canvas camera={{ fov: 60, position: [0, 0, 2] }} gl={{ antialias: true }} dpr={[1, 2]}>
           <Suspense fallback={<ProgressLoader />}>
             {modelData &&
               generatingStatus === "Completed" &&
               textureModifiedModelURL !== "" &&
-              textureModifiedModelURL !== undefined && <ModelViewer modelUrl={textureModifiedModelURL} />}
+              textureModifiedModelURL !== undefined && <ModelViewer modelUrl={resultModelURLs[selectedTab]} />}
             {generatingStatus === "Generating" && <DistortLoader statusData={statusData} />}
           </Suspense>
           <EnvironmentSettings isCompleted={generatingStatus === "Completed"} />
@@ -51,6 +55,10 @@ function App() {
           ""
         )}
       </div>
+
+      {generatingStatus === "Completed" && (
+        <ResultModelSelector selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+      )}
 
       <aside
         className={cls(

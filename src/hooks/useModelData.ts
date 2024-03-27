@@ -44,6 +44,7 @@ const useModelData = () => {
   const [generatingStatus, setGeneratingStatus] = useState<GeneratingStatus>("Loading");
 
   const [textureModifiedModelURL, setTextureModifiedModelURL] = useState("");
+  const [resultModelURLs, setResultModelURLs] = useState<string[]>([]);
   const [originalImgURL, setOriginalImgURL] = useState("");
   const [removedBGImgURL, setRemovedBGImgURL] = useState("");
 
@@ -177,6 +178,21 @@ const useModelData = () => {
 
   useEffect(() => {
     if (!modelData) return;
+
+    let originalModel = "";
+    let remeshedModel = "";
+
+    modelData.resultFiles.forEach(file => {
+      if (file.endsWith(".glb") && !file.includes("texture") && !file.includes("arranged")) {
+        originalModel = `${modelData.base_url}/${file}`;
+      } else if (file.endsWith("remeshed-texture.glb")) {
+        remeshedModel = `${modelData.base_url}/${file}`;
+      }
+    });
+
+    const newModelURLs = [originalModel, remeshedModel].filter(url => url !== "");
+    setResultModelURLs(newModelURLs);
+
     const modifiedModelFile = modelData.resultFiles.find((file: string) => file.endsWith("remeshed-texture.glb"));
     setTextureModifiedModelURL(`${modelData.base_url}/${modifiedModelFile}`);
   }, [modelData]);
@@ -189,6 +205,7 @@ const useModelData = () => {
     textureModifiedModelURL,
     originalImgURL,
     removedBGImgURL,
+    resultModelURLs,
   };
 };
 

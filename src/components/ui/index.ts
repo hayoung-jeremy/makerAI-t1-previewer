@@ -5,3 +5,4 @@ export { default as ToggleToSeeWireframeButton } from "./ToggleToSeeWireframeBut
 export { default as SpinningLoader } from "./SpinningLoader";
 export { default as FileDownloader } from "./FileDownloader";
 export { default as WaitingForQueue } from "./WaitingForQueue";
+export { default as ResultModelSelector } from "./ResultModelSelector";

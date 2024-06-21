@@ -17,7 +17,7 @@ const OriginalImageViewer = ({ generatingStatus, originalImgURL, removedBGImgURL
       </div>
       <div className="w-full grid grid-cols-2">
         {originalImgURL && originalImgURL !== "" && generatingStatus !== "Loading" ? (
-          <div className="border border-white/20 overflow-hidden rounded-l-xl">
+          <div className="border border-white/20 overflow-hidden rounded-l-xl aspect-square">
             <img src={originalImgURL} alt="original image" className="object-contain w-full h-full" />
           </div>
         ) : (
@@ -33,7 +33,7 @@ const OriginalImageViewer = ({ generatingStatus, originalImgURL, removedBGImgURL
           </div>
         )}
         {removedBGImgURL && removedBGImgURL !== "" && generatingStatus !== "Loading" ? (
-          <div className="border border-white/20 border-l-0 overflow-hidden rounded-r-xl">
+          <div className="border border-white/20 border-l-0 overflow-hidden rounded-r-xl aspect-square">
             <img src={removedBGImgURL} className="object-contain w-full h-full" />
           </div>
         ) : (
